@@ -1,4 +1,4 @@
-#lang racket
+c#lang racket
 
 (provide (all-defined-out))
 
@@ -44,7 +44,7 @@
 ; Ex: (-1,2,2)·(3,4,5) = -3 + 8 + 10 = 15
 ; Utilizați recursivitate pe stivă.
 (define (dot-product X Y)
-  'your-code-here)
+  (if (= (length X) 0) 0 (+ (* (car X) (car Y)) (dot-product (cdr X) (cdr Y)))))
 
 
 ; TODO
