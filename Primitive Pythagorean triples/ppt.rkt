@@ -56,7 +56,12 @@ c#lang racket
 ;     |-2 2 3| |5|   |17|
 ; Utilizați recursivitate pe coadă.
 (define (multiply M V)
-  'your-code-here)
+  (get-matrix-multiplication-iter M V (list) 0))
+
+(define (get-matrix-multiplication-iter Matrix Vector list-ans counter)
+  (if (= 3 (length list-ans))
+      list-ans
+      (get-matrix-multiplication-iter (cdr Matrix) V (append list-ans (list (dot-product (car (drop M counter)) V))) (+ counter 1))))
 
 
 ; TODO
