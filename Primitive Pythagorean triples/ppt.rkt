@@ -61,7 +61,7 @@
 
 ; Apeleaza functia get-matrix-multiplication-iter care returneaza raspunsul
 (define (multiply M V)
-  (get-matrix-multiplication-iter M V (list) 0))
+  (get-matrix-multiplication-iter M V (list)))
 
 ; Ia fiecare rand din matrice si il inmulteste cu Vector folosind functia definita precedent
 ; salvand raspunsul in lista 'list-ans' ce va fi returnata in final
@@ -118,11 +118,31 @@
 ; în urma aplicării transformărilor din Ts asupra ppt.
 ; Utilizați recursivitate pe coadă.
 (define (apply-matrix-transformations Ts ppt)
-  'your-code-here)
+  (get-answer (cdr (reverse Ts)) ppt (get-matrix (get-right-element-list Ts))))
+
+(define (get-right-element-list L)
+  (car (reverse L)))
+
+(define (get-matrix index)
+  (cond
+    ((= index 1) T1)
+    ((= index 2) T2)
+    (else T3)))
+    
+
+(define (get-answer Ts ppt acc)
+  (if (null? Ts)
+      (multiply acc ppt)
+      (get-answer (cdr Ts) ppt (multiply-matrix acc (get-matrix (car Ts))))))
+
+(define (multiply-matrix m1 m2)
+  (for/list ([r m1])
+    (for/list ([c (apply map list m2)])
+      (apply + (map * r c)))))
 
 
 ; TODO
 ; Implementați o funcție care calculează al n-lea TPP
 ; din arbore, folosind funcțiile anterioare.
-(define (get-nth-ppt-from-matrix-transformations n)
-  'your-code-here)
+(define (get-nth-ppt-from-matrix-transformations n) ; vom afla path-ul necesar si vom aplica functia care genereaza rezultatul dorit definita anterior
+   (apply-matrix-transformations (get-transformations n) (list 3 4 5)))
