@@ -1,4 +1,4 @@
-c#lang racket
+#lang racket
 
 (provide (all-defined-out))
 
@@ -58,10 +58,10 @@ c#lang racket
 (define (multiply M V)
   (get-matrix-multiplication-iter M V (list) 0))
 
-(define (get-matrix-multiplication-iter Matrix Vector list-ans counter)
+(define (get-matrix-multiplication-iter Matrix Vector list-ans)
   (if (= 3 (length list-ans))
       list-ans
-      (get-matrix-multiplication-iter (cdr Matrix) V (append list-ans (list (dot-product (car (drop M counter)) V))) (+ counter 1))))
+      (get-matrix-multiplication-iter (cdr Matrix) Vector (append list-ans (list (dot-product (car  Matrix) Vector))))))
 
 
 ; TODO
@@ -77,8 +77,24 @@ c#lang racket
 ; pe care se află n, sau a indexului minim/maxim de pe 
 ; nivelul respectiv, etc.)
 (define (get-transformations n)
-  'your-code-here)
+  (get-list-of-transformations n 0 0 0))
 
+(define (get-list-of-transformations n level total-prev-nodes total-lower-level-nodes)
+  (if (< n total-prev-nodes)
+      ; For true, show result
+      (get-result n (+ total-lower-level-nodes 1) total-prev-nodes (- level 2) (list))
+
+      ; For false, go down the tree
+      (get-list-of-transformations n (+ level 1) (+ total-prev-nodes (expt 3 level)) (quotient (+ total-prev-nodes (expt 3 level)) 3))))
+
+(define (get-result n min max level list-ans)
+  (if (= level -1)
+      list-ans
+      ; altfel pune in lista valoarea ceruta
+      (cond
+        ((< n (+ min (expt 3 level))) (get-result n min (- (+ min (expt 3 level)) 1) (- level 1) (append list-ans (list 1)))); actualizam maximul
+        ((and (>= n (+ min (expt 3 level))) (< n (+ min (* (expt 3 level) 2)))) (get-result n (+ min (expt 3 level)) (- (+ min (* (expt 3 level) 2)) 1) (- level 1) (append list-ans (list 2)))) ; actualizam si minimul si maximul
+        (else (get-result n (+ min (* (expt 3 level) 2)) max (- level 1) (append list-ans (list 3))))))) ; actualizam minimul
 
 ; TODO
 ; Implementați o funcție care primește o listă Ts de 
