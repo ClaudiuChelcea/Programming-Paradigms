@@ -43,6 +43,9 @@
 ; Se garantează că X și Y au aceeași lungime.
 ; Ex: (-1,2,2)·(3,4,5) = -3 + 8 + 10 = 15
 ; Utilizați recursivitate pe stivă.
+
+; Returneaza produsul primelor elemente din fiecare lista inmultit cu apelarea
+; recursiva pe stiva a celor doua liste fara primul element (cdr)
 (define (dot-product X Y)
   (if (= (length X) 0) 0 (+ (* (car X) (car Y)) (dot-product (cdr X) (cdr Y)))))
 
@@ -55,9 +58,13 @@
 ;     |-2 1 2|·|4| = | 8|
 ;     |-2 2 3| |5|   |17|
 ; Utilizați recursivitate pe coadă.
+
+; Apeleaza functia get-matrix-multiplication-iter care returneaza raspunsul
 (define (multiply M V)
   (get-matrix-multiplication-iter M V (list) 0))
 
+; Ia fiecare rand din matrice si il inmulteste cu Vector folosind functia definita precedent
+; salvand raspunsul in lista 'list-ans' ce va fi returnata in final
 (define (get-matrix-multiplication-iter Matrix Vector list-ans)
   (if (= 3 (length list-ans))
       list-ans
@@ -76,9 +83,14 @@
 ; (de exemplu pentru determinarea nivelului din arbore 
 ; pe care se află n, sau a indexului minim/maxim de pe 
 ; nivelul respectiv, etc.)
+
+; Apeleaza functia 'get-list-of-transformations' cu valori nule
 (define (get-transformations n)
   (get-list-of-transformations n 0 0 0))
 
+; Aceasta functie va merge recursiv in calcularea nivelului pe care se va afla n si a nodurilor
+; dinainte si din timpul acelui nivel, care, atunci cand gaseste nivelul dorit (cand nr de noduri totale
+; e mai mare decat n, apeleaza functia care returneaza rezultatul)
 (define (get-list-of-transformations n level total-prev-nodes total-lower-level-nodes)
   (if (< n total-prev-nodes)
       ; For true, show result
@@ -87,6 +99,9 @@
       ; For false, go down the tree
       (get-list-of-transformations n (+ level 1) (+ total-prev-nodes (expt 3 level)) (quotient (+ total-prev-nodes (expt 3 level)) 3))))
 
+; Daca nivelul este -1, returneaza lista
+; Altfel parcurge recursiv, actualizand minimul si maximul sau chiar ambele in functie de unul dintre cele 3 cazuri
+; pana gasim locul in care se incadreaza 'n'-ul nostru si returneaza lista dorita
 (define (get-result n min max level list-ans)
   (if (= level -1)
       list-ans
