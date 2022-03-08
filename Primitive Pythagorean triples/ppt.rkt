@@ -63,7 +63,7 @@
 (define (multiply M V)
   (get-matrix-multiplication-iter M V (list)))
 
-; Ia fiecare rand din matrice si il inmulteste cu Vector folosind functia definita precedent
+; Ia fiecare rand din matrice si il inmulteste cu 'Vector' folosind functia definita precedent
 ; salvand raspunsul in lista 'list-ans' ce va fi returnata in final
 (define (get-matrix-multiplication-iter Matrix Vector list-ans)
   (if (= (length Vector) (length list-ans))
@@ -92,7 +92,7 @@
 ; dinainte si din timpul acelui nivel, care, atunci cand gaseste nivelul dorit (cand nr de noduri totale
 ; e mai mare decat n, apeleaza functia care returneaza rezultatul)
 (define (get-list-of-transformations n level total-prev-nodes total-lower-level-nodes)
-  (if (= n 1)
+  (if (= n 1) ; default case
       (list)
   (if (= n 2) ; default case
          (list 1)
@@ -100,7 +100,7 @@
              (list 2)
              (if (= n 4) ; default case
                  (list 3)
-  (if (< n total-prev-nodes)
+  (if (< n total-prev-nodes) ; Daca nr de noduri curente va depasi n (de ex, pt n = 64, se va opri la total-prev-nodes = 121)
       ; For true, show result
       (get-result n (+ total-lower-level-nodes 1) total-prev-nodes (- level 2) (list))
 
@@ -128,25 +128,30 @@
 (define (apply-matrix-transformations Ts ppt)
   (get-answer (cdr (reverse Ts)) ppt (get-matrix (get-right-element-list Ts))))
 
+; un take-right pe lista
 (define (get-right-element-list L)
   (car (reverse L)))
 
+; bazat pe index, returneaza T1, T2 sau T3
 (define (get-matrix index)
   (cond
     ((= index 1) T1)
     ((= index 2) T2)
     (else T3)))
     
-
+; Daca am ajuns la Ts gol, inmulteste cu ppt folosind multiply definit anterior
+; Daca nu, foloseste recursivitatea pe coada pentru a inmulti matricile dorite si salvat raspuns
+; in acc - acumulator
 (define (get-answer Ts ppt acc)
   (if (null? Ts)
       (multiply acc ppt)
-      (get-answer (cdr Ts) ppt (multiply-matrix acc (get-matrix (car Ts))))))
+      (get-answer (cdr Ts) ppt (matrix* acc (get-matrix (car Ts))))))
 
-(define (multiply-matrix m1 m2)
-  (for/list ([r m1])
-    (for/list ([c (apply map list m2)])
-      (apply + (map * r c)))))
+; Inmultirea a doua matrici
+(define (matrix* Matrix1 Matrix2)
+  (for/list ([row Matrix1])
+    (for/list ([column (apply map list Matrix2)])
+      (apply + (map * row column)))))
 
 
 ; TODO
