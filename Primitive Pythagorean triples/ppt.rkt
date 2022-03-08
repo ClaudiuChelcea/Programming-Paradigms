@@ -66,7 +66,7 @@
 ; Ia fiecare rand din matrice si il inmulteste cu Vector folosind functia definita precedent
 ; salvand raspunsul in lista 'list-ans' ce va fi returnata in final
 (define (get-matrix-multiplication-iter Matrix Vector list-ans)
-  (if (= 3 (length list-ans))
+  (if (= (length Vector) (length list-ans))
       list-ans
       (get-matrix-multiplication-iter (cdr Matrix) Vector (append list-ans (list (dot-product (car  Matrix) Vector))))))
 
@@ -92,12 +92,18 @@
 ; dinainte si din timpul acelui nivel, care, atunci cand gaseste nivelul dorit (cand nr de noduri totale
 ; e mai mare decat n, apeleaza functia care returneaza rezultatul)
 (define (get-list-of-transformations n level total-prev-nodes total-lower-level-nodes)
+  (if (= n 2) ; default case
+         (list 1)
+         (if (= n 3) ; default case
+             (list 2)
+             (if (= n 4) ; default case
+                 (list 3)
   (if (< n total-prev-nodes)
       ; For true, show result
       (get-result n (+ total-lower-level-nodes 1) total-prev-nodes (- level 2) (list))
 
       ; For false, go down the tree
-      (get-list-of-transformations n (+ level 1) (+ total-prev-nodes (expt 3 level)) (quotient (+ total-prev-nodes (expt 3 level)) 3))))
+      (get-list-of-transformations n (+ level 1) (+ total-prev-nodes (expt 3 level)) (quotient (+ total-prev-nodes (expt 3 level)) 3)))))))
 
 ; Daca nivelul este -1, returneaza lista
 ; Altfel parcurge recursiv, actualizand minimul si maximul sau chiar ambele in functie de unul dintre cele 3 cazuri
@@ -145,4 +151,6 @@
 ; Implementați o funcție care calculează al n-lea TPP
 ; din arbore, folosind funcțiile anterioare.
 (define (get-nth-ppt-from-matrix-transformations n) ; vom afla path-ul necesar si vom aplica functia care genereaza rezultatul dorit definita anterior
-   (apply-matrix-transformations (get-transformations n) (list 3 4 5)))
+  (if (= n 1)
+      (list 3 4 5) ; default case
+      (apply-matrix-transformations (get-transformations n) (list 3 4 5))))
