@@ -92,6 +92,8 @@
 ; dinainte si din timpul acelui nivel, care, atunci cand gaseste nivelul dorit (cand nr de noduri totale
 ; e mai mare decat n, apeleaza functia care returneaza rezultatul)
 (define (get-list-of-transformations n level total-prev-nodes total-lower-level-nodes)
+  (if (= n 1)
+      (list)
   (if (= n 2) ; default case
          (list 1)
          (if (= n 3) ; default case
@@ -103,7 +105,7 @@
       (get-result n (+ total-lower-level-nodes 1) total-prev-nodes (- level 2) (list))
 
       ; For false, go down the tree
-      (get-list-of-transformations n (+ level 1) (+ total-prev-nodes (expt 3 level)) (quotient (+ total-prev-nodes (expt 3 level)) 3)))))))
+      (get-list-of-transformations n (+ level 1) (+ total-prev-nodes (expt 3 level)) (quotient (+ total-prev-nodes (expt 3 level)) 3))))))))
 
 ; Daca nivelul este -1, returneaza lista
 ; Altfel parcurge recursiv, actualizand minimul si maximul sau chiar ambele in functie de unul dintre cele 3 cazuri
