@@ -66,7 +66,7 @@
 ; Se garantează că X și Y au aceeași lungime.
 ; Ex: (-1,2,2)·(3,4,5) = -3 + 8 + 10 = 15
 
-; Inmultueste elementele cu map si aduna-le cu foldl
+; Inmultueste elementele cu 'map' si aduna-le cu 'foldl'
 (define (dot-product X Y)
   (foldl + 0 (map * X Y)));
 
@@ -80,17 +80,51 @@
 ; Ex: |-1 2 2| |3|   |15|
 ;     |-2 1 2|·|4| = | 8|
 ;     |-2 2 3| |5|   |17|
-(define (multiply M V)
-  (map dot-product (list V-aux V-aux V-aux) (apply list M-aux)))
 
+; Aplica dot-product pe fiecare rand al lui M
+(define (multiply M V)
+  (map (lambda (row-of-M) (dot-product row-of-M V)) M))
 
 ; TODO
 ; Aduceți aici (nu sunt necesare modificări) implementarea
 ; funcției get-transformations de la etapa 1.
 ; Această funcție nu este re-punctată de checker, însă este
 ; necesară implementărilor ulterioare.
+
+; Apeleaza functia 'get-list-of-transformations' cu valori nule
 (define (get-transformations n)
-  'your-code-here)
+  (get-list-of-transformations n 0 0 0))
+
+; Aceasta functie va merge recursiv in calcularea nivelului pe care se va afla n si a nodurilor
+; dinainte si din timpul acelui nivel, care, atunci cand gaseste nivelul dorit (cand nr de noduri totale
+; e mai mare decat n, apeleaza functia care returneaza rezultatul)
+(define (get-list-of-transformations n level total-prev-nodes total-lower-level-nodes)
+  (if (= n 1) ; default case
+      (list)
+  (if (= n 2) ; default case
+         (list 1)
+         (if (= n 3) ; default case
+             (list 2)
+             (if (= n 4) ; default case
+                 (list 3)
+  (if (< n total-prev-nodes) ; Daca nr de noduri curente va depasi n (de ex, pt n = 64, se va opri la total-prev-nodes = 121)
+      ; For true, show result
+      (get-result n (+ total-lower-level-nodes 1) total-prev-nodes (- level 2) (list))
+
+      ; For false, go down the tree
+      (get-list-of-transformations n (+ level 1) (+ total-prev-nodes (expt 3 level)) (quotient (+ total-prev-nodes (expt 3 level)) 3))))))))
+
+; Daca nivelul este -1, returneaza lista
+; Altfel parcurge recursiv, actualizand minimul si maximul sau chiar ambele in functie de unul dintre cele 3 cazuri
+; pana gasim locul in care se incadreaza 'n'-ul nostru si returneaza lista dorita
+(define (get-result n min max level list-ans)
+  (if (= level -1)
+      list-ans
+      ; altfel pune in lista valoarea ceruta
+      (cond
+        ((< n (+ min (expt 3 level))) (get-result n min (- (+ min (expt 3 level)) 1) (- level 1) (append list-ans (list 1)))); actualizam maximul
+        ((and (>= n (+ min (expt 3 level))) (< n (+ min (* (expt 3 level) 2)))) (get-result n (+ min (expt 3 level)) (- (+ min (* (expt 3 level) 2)) 1) (- level 1) (append list-ans (list 2)))) ; actualizam si minimul si maximul
+        (else (get-result n (+ min (* (expt 3 level) 2)) max (- level 1) (append list-ans (list 3))))))) ; actualizam minimul
 
 
 ; TODO
@@ -110,7 +144,9 @@
 ;    Fs să primească parametri de tipul lui tuple)
 ; Nu folosiți recursivitate explicită (ci funcționale).
 (define (apply-functional-transformations Fs tuple)
-  'your-code-here)
+  (and (map
+   (lambda (f) (set! tuple (f tuple)))
+   Fs)) tuple)
 
 
 ; TODO
