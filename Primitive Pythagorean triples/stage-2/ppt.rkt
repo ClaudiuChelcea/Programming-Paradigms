@@ -81,7 +81,7 @@
 ;     |-2 1 2|·|4| = | 8|
 ;     |-2 2 3| |5|   |17|
 (define (multiply M V)
-  'your-code-here)
+  (map dot-product (list V-aux V-aux V-aux) (apply list M-aux)))
 
 
 ; TODO
