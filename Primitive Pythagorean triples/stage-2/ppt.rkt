@@ -143,6 +143,8 @@
 ;    funcționalitatea, este responsabilitatea funcțiilor din
 ;    Fs să primească parametri de tipul lui tuple)
 ; Nu folosiți recursivitate explicită (ci funcționale).
+
+; Aplicam fiecare functie din Fs pe tuple, modificand-o constant
 (define (apply-functional-transformations Fs tuple)
   (and (map
    (lambda (f) (set! tuple (f tuple)))
@@ -170,12 +172,17 @@
 ; modul optim în care funcția să își primească parametrii.
 ; Din acest motiv checker-ul nu testează separat această funcție,
 ; dar asistentul va observa dacă implementarea respectă cerința.
+
+; In cazul PPT, ca si data trecuta, se executa acelasi proces
+; de gasire a raspunsului.
+; In cazul cvartetelor, se aplica functia apply Q_index pe tuple initial
+; pana se ajunge la raspunsul dorit
 (define default-q (list 1 1 2 3))
 (define (get-nth-tuple Ts start-tuple fct-1)
   (if (= (length start-tuple) 3)
       (get-answer (cdr (reverse Ts)) start-tuple (fct-1 (get-right-element-list Ts)))
       (and (set! default-q (list 1 1 2 3)) (for/list ([value Ts])
-      (set! default-q (apply (get-quartet value) default-q))) default-q)))
+      (set! default-q (apply (fct-1 value) default-q))) default-q)))
 
 ; un take-right pe lista
 (define (get-right-element-list L)
@@ -236,6 +243,8 @@
 ; TODO
 ; Folosiți rezultatul întors de get-nth-quadruple pentru a 
 ; obține al n-lea TPP din arbore.
+
+; Functia de conversie a unui cvartet la un ppt
 (define (gh g e f h) (list (* g h) (* 2 e f) (+ (* e e) (* f f))))
 (define (get-nth-ppt-from-GH-quadruples n)
   (apply gh (get-nth-quadruple n)))
