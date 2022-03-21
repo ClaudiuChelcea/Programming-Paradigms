@@ -170,28 +170,72 @@
 ; modul optim în care funcția să își primească parametrii.
 ; Din acest motiv checker-ul nu testează separat această funcție,
 ; dar asistentul va observa dacă implementarea respectă cerința.
-(define get-nth-tuple
-  'your-code-here)
+(define default-q (list 1 1 2 3))
+(define (get-nth-tuple Ts start-tuple fct-1)
+  (if (= (length start-tuple) 3)
+      (get-answer (cdr (reverse Ts)) start-tuple (fct-1 (get-right-element-list Ts)))
+      (and (set! default-q (list 1 1 2 3)) (for/list ([value Ts])
+      (set! default-q (apply (get-quartet value) default-q))) default-q)))
 
+; un take-right pe lista
+(define (get-right-element-list L)
+  (car (reverse L)))
+
+; bazat pe index, returneaza T1, T2 sau T3
+(define (get-matrix index)
+  (cond
+    ((= index 1) T1)
+    ((= index 2) T2)
+    (else T3)))
+
+; bazat pe index, returneaza Q1, Q2 sau Q3
+(define (get-quartet index)
+  (cond
+    ((= index 1) Q1)
+    ((= index 2) Q2)
+    (else Q3)))
+
+; Pt PPT --------
+; Daca am ajuns la Ts gol, inmulteste cu ppt folosind multiply definit anterior
+; Daca nu, foloseste recursivitatea pe coada pentru a inmulti matricile dorite si salvat raspuns
+; in acc - acumulator
+; PT Q ----------
+; Daca am ajuns la Ts gol, aplica functia de inmultire pe quartet-ul default
+; Daca nu, foloseste recursivitatea pe coada pentru a inmulti quartetete si a salva
+; raspunsul in acc - acumulator ; (apply Q1 (apply Q1 default-q))
+(define (get-answer Ts ppt acc)
+  (if (null? Ts)
+      (multiply acc ppt)
+      (get-answer (cdr Ts) ppt (matrix* acc (get-matrix (car Ts))))))
+
+; Inmultirea a doua matrici
+(define (matrix* Matrix1 Matrix2)
+  (for/list ([row Matrix1])
+    (for/list ([column (apply map list Matrix2)])
+      (apply + (map * row column)))))
 
 ; TODO
 ; Din get-nth-tuple, obțineți în cel mai succint mod posibil
 ; (hint: aplicare parțială) o funcție care calculează al n-lea
 ; TPP din arbore, folosind transformările pe triplete.
-(define get-nth-ppt-from-matrix-transformations
-  'your-code-here)
-
+(define (get-nth-ppt-from-matrix-transformations n)
+  (if (= n 1)
+      (list 3 4 5) ; default case
+      (get-nth-tuple (get-transformations n) (list 3 4 5) get-matrix)))
 
 ; TODO
 ; Din get-nth-tuple, obțineți în cel mai succint mod posibil 
 ; (hint: aplicare parțială) o funcție care calculează al n-lea 
 ; cvartet din arbore, folosind transformările pe cvartete.
-(define get-nth-quadruple
-  'your-code-here)
+(define (get-nth-quadruple n)
+  (if (= n 1)
+      (list 1 1 2 3)
+      (get-nth-tuple (get-transformations n) (list 1 1 2 3) get-quartet)))
 
 
 ; TODO
 ; Folosiți rezultatul întors de get-nth-quadruple pentru a 
 ; obține al n-lea TPP din arbore.
-(define get-nth-ppt-from-GH-quadruples
-  'your-code-here)
+(define (gh g e f h) (list (* g h) (* 2 e f) (+ (* e e) (* f f))))
+(define (get-nth-ppt-from-GH-quadruples n)
+  (apply gh (get-nth-quadruple n)))
