@@ -70,14 +70,16 @@
 ; Utilizați o funcțională astfel încât să nu scrieți 9 bucăți 
 ; de cod foarte similare (de exemplu, numele operației mod ar
 ; trebui să apară o singură dată).
+
+(define reduce (lambda (element) (let [(partial-answer (remainder element 27))]
+                                (if (> 0 partial-answer)
+                                    (+ partial-answer 27)
+                                    partial-answer))))
 (define (key n)
   (let [(ans (get-nth-quadruple n))]
   (let [(e (cadr ans)) (f (caddr ans))]
      (let [(before-reduction (list (a1 e f) (b1 e f) (c1 e f) (a2 e f) (b2 e f) (c2 e f) (a3 e f) (b3 e f) (c3 e f)))]
-       (map (lambda (element) (let [(partial-answer (remainder element 27))]
-                                (if (> 0 partial-answer)
-                                    (+ partial-answer 27)
-                                    partial-answer))) before-reduction)))))
+       (map reduce before-reduction)))))
 
 ; TODO
 ; Implementați o funcție care primește un mesaj (un șir de
@@ -86,7 +88,11 @@
 ; (spațiu devine 0, 'a' devine 1 ... 'z' devine 26).
 ; Funcții utile: string->list, char->integer
 (define (message->codes message)
-  'your-code-here)
+  (let [(message-list (string->list message))]
+    (map (lambda (element) (if (= (char->integer element) 32)
+                               0
+                               (- (char->integer element) 96))) message-list)))
+                                 
 
 
 ; TODO
@@ -95,7 +101,10 @@
 ; (procesul invers celui de la funcția message->codes).
 ; Funcții utile: list->string, integer->char
 (define (codes->message codes)
-  'your-code-here)
+  (list->string (apply list (map (lambda (element) (if (= 0 element)
+                             (integer->char 32)
+                             (integer->char (+ element 96)))) codes))))
+                          
 
 
 ;; Pentru operațiile de criptare și decriptare, lucrăm
@@ -122,7 +131,15 @@
 ; dimensiunea size.
 ; Folosiți cel puțin o formă de let.
 (define (extend-key key size)
-  'your-code-here)
+  (if (> (length key) size)
+      (take key size)
+      ; altfel prelungeste lista
+      (let [(nr-concatenari-complete (quotient size (length key)))]
+        ; concateneaza de atatea ori
+        (let for-iter-concat [(i 0) (L '())]
+          (if (= i nr-concatenari-complete)
+              (append L (take key (remainder size (length key))))
+              (for-iter-concat (add1 i) (append L key)))))))
 
 
 ; TODO
@@ -138,11 +155,16 @@
 ; Ambele funcții primesc două liste de coduri (reprezentând
 ; mesajul clar/criptat, respectiv cheia) și întorc o listă
 ; de coduri (mesajul criptat/decriptat, după caz).
-(define encrypt-codes
-  'your-code-here)
-(define decrypt-codes
-  'your-code-here)
+(define (execute-encrypt-decrypt L1 L2 operator)
+  (if (< (length L1) (length L2))
+      (map reduce (map operator (extend-key L1 (length L2)) L2))
+      (map reduce (map operator L1 (extend-key L2 (length L1))))))
 
+(define (encrypt-codes L Key)
+  (execute-encrypt-decrypt L Key +))
+
+(define (decrypt-codes L Key)
+  (execute-encrypt-decrypt L Key -))
 
 ; TODO
 ; Analog funcțiilor encrypt-codes și decrypt-codes care
@@ -151,8 +173,12 @@
 ; În acest caz, ambele funcții primesc un șir de caractere
 ; (mesajul clar/criptat) și o listă de coduri (cheia) și
 ; întorc un șir de caractere (mesajul criptat/decriptat).
-(define encrypt-message
-  'your-code-here)
-(define decrypt-message
-  'your-code-here)
+(define (encrypt-message message key)
+  (let* [(message-list (message->codes message)) (key-list (extend-key key (length message-list)))]
+    (codes->message (map reduce (map + message-list key-list)))))
+    
+
+(define (decrypt-message message key)
+  (let* [(message-list (message->codes message)) (key-list (extend-key key (length message-list)))]
+    (codes->message (map reduce (map + message-list key-list)))))
            
