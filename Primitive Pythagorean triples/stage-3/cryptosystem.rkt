@@ -71,10 +71,13 @@
 ; de cod foarte similare (de exemplu, numele operației mod ar
 ; trebui să apară o singură dată).
 
+; Functie care executa acel mod 27 fiecarui element
 (define reduce (lambda (element) (let [(partial-answer (remainder element 27))]
                                 (if (> 0 partial-answer)
                                     (+ partial-answer 27)
                                     partial-answer))))
+
+; Obtine cheia
 (define (key n)
   (let [(ans (get-nth-quadruple n))]
   (let [(e (cadr ans)) (f (caddr ans))]
@@ -180,7 +183,6 @@
 (define (encrypt-message message key)
   (execute-encrypt-decrypt-string message key +))
     
-
 (define (decrypt-message message key)
   (execute-encrypt-decrypt-string message key -))
            
