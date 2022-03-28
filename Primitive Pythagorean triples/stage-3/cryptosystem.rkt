@@ -155,16 +155,16 @@
 ; Ambele funcții primesc două liste de coduri (reprezentând
 ; mesajul clar/criptat, respectiv cheia) și întorc o listă
 ; de coduri (mesajul criptat/decriptat, după caz).
-(define (execute-encrypt-decrypt L1 L2 operator)
+(define (execute-encrypt-decrypt-codes L1 L2 operator)
   (if (< (length L1) (length L2))
       (map reduce (map operator (extend-key L1 (length L2)) L2))
       (map reduce (map operator L1 (extend-key L2 (length L1))))))
 
 (define (encrypt-codes L Key)
-  (execute-encrypt-decrypt L Key +))
+  (execute-encrypt-decrypt-codes L Key +))
 
 (define (decrypt-codes L Key)
-  (execute-encrypt-decrypt L Key -))
+  (execute-encrypt-decrypt-codes L Key -))
 
 ; TODO
 ; Analog funcțiilor encrypt-codes și decrypt-codes care
@@ -173,12 +173,14 @@
 ; În acest caz, ambele funcții primesc un șir de caractere
 ; (mesajul clar/criptat) și o listă de coduri (cheia) și
 ; întorc un șir de caractere (mesajul criptat/decriptat).
-(define (encrypt-message message key)
+(define (execute-encrypt-decrypt-string message key operator)
   (let* [(message-list (message->codes message)) (key-list (extend-key key (length message-list)))]
-    (codes->message (map reduce (map + message-list key-list)))))
+    (codes->message (map reduce (map operator message-list key-list)))))
+
+(define (encrypt-message message key)
+  (execute-encrypt-decrypt-string message key +))
     
 
 (define (decrypt-message message key)
-  (let* [(message-list (message->codes message)) (key-list (extend-key key (length message-list)))]
-    (codes->message (map reduce (map + message-list key-list)))))
+  (execute-encrypt-decrypt-string message key -))
            
