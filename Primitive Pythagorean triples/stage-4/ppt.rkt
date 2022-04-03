@@ -177,7 +177,12 @@
 ; TODO
 ; Definiți fluxul de TPP corespunzător fluxului anterior de
 ; perechi (g, h).
+(define (transformation pair)
+  (let [(g (car pair)) (h (cdr pair))]
+    (list (* g h) (quotient (- (* h h) (* g g)) 2)  (quotient (+ (* h h) (* g g)) 2))))
+
 (define ppt-stream-in-pair-order
-  'your-code-here)
+  (let iter-stream [(my-stream gh-pairs-stream)]
+    (stream-cons (transformation (stream-first my-stream)) (iter-stream (stream-rest my-stream)))))
 
 
