@@ -47,12 +47,6 @@
 (define (multiply M V)
   (map (lambda (row-of-M) (dot-product row-of-M V)) M))
 
-; Inmultirea a doua matrici
-(define (matrix* Matrix1 Matrix2)
-  (for/list ([row Matrix1])
-    (for/list ([column (apply map list Matrix2)])
-      (apply + (map * row column)))))
-
 (define (stream-take s n)
   (cond ((zero? n) '())
         ((stream-empty? s) '())
@@ -156,7 +150,6 @@
         list-ans
     (repeat-cons (cdr new-list) element-to-cons-with (append list-ans (list (cons (car new-list) element-to-cons-with)))))))
   
-  
 (define (pairs G H)
   (let iter-2 [(nr-elements 1) (level 0)]
     (if (= 0 level)
@@ -168,8 +161,17 @@
 ; indexare a TPP.
 ; Nu folosiți recursivitate explicită (decât pentru a genera
 ; fluxurile de pornire - G și H).
+(define (G_tmp start)
+  (stream-cons start (G_tmp (+ start 2))))
+
+(define G (G_tmp 1))
+(define H (stream-rest G))
+
 (define gh-pairs-stream
-  'your-code-here)
+  (stream-filter (lambda (pair)
+                   (if (or (and (= 0 (remainder (cdr pair) (car pair))) (< 1 (car pair))) (> (gcd (cdr pair) (car pair)) 1))
+                       #f
+                       #t)) (pairs G H)))
 
 
 ; TODO
