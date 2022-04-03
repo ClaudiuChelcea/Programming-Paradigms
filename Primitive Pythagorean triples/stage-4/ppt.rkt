@@ -42,11 +42,80 @@
 ; Cele două funcții nu sunt re-punctate de checker, însă 
 ; sunt necesare generării succesorilor unui nod.
 (define (dot-product X Y)
-  'your-code-here)
+  (foldl + 0 (map * X Y)));
 
 (define (multiply M V)
-  'your-code-here)
+  (map (lambda (row-of-M) (dot-product row-of-M V)) M))
 
+(define (get-transformations n)
+  (get-list-of-transformations n 0 0 0))
+
+(define (get-list-of-transformations n level total-prev-nodes total-lower-level-nodes)
+  (if (= n 1) ; default case
+      (list)
+  (if (= n 2) ; default case
+         (list 1)
+         (if (= n 3) ; default case
+             (list 2)
+             (if (= n 4) ; default case
+                 (list 3)
+  (if (< n total-prev-nodes) ; Daca nr de noduri curente va depasi n (de ex, pt n = 64, se va opri la total-prev-nodes = 121)
+      ; For true, show result
+      (get-result n (+ total-lower-level-nodes 1) total-prev-nodes (- level 2) (list))
+
+      ; For false, go down the tree
+      (get-list-of-transformations n (+ level 1) (+ total-prev-nodes (expt 3 level)) (quotient (+ total-prev-nodes (expt 3 level)) 3))))))))
+
+; Daca nivelul este -1, returneaza lista
+; Altfel parcurge recursiv, actualizand minimul si maximul sau chiar ambele in functie de unul dintre cele 3 cazuri
+; pana gasim locul in care se incadreaza 'n'-ul nostru si returneaza lista dorita
+(define (get-result n min max level list-ans)
+  (if (= level -1)
+      list-ans
+      ; altfel pune in lista valoarea ceruta
+      (cond
+        ((< n (+ min (expt 3 level))) (get-result n min (- (+ min (expt 3 level)) 1) (- level 1) (append list-ans (list 1)))); actualizam maximul
+        ((and (>= n (+ min (expt 3 level))) (< n (+ min (* (expt 3 level) 2)))) (get-result n (+ min (expt 3 level)) (- (+ min (* (expt 3 level) 2)) 1) (- level 1) (append list-ans (list 2)))) ; actualizam si minimul si maximul
+        (else (get-result n (+ min (* (expt 3 level) 2)) max (- level 1) (append list-ans (list 3))))))) ; actualizam minimul
+
+(define (apply-functional-transformations Fs tuple)
+  (and (map
+   (lambda (f) (set! tuple (f tuple)))
+   Fs)) tuple)
+
+(define default-q (list 1 1 2 3))
+(define (get-nth-tuple Ts start-tuple fct-1)
+  (if (= (length start-tuple) 3)
+      (get-answer (cdr (reverse Ts)) start-tuple (fct-1 (get-right-element-list Ts)))
+      (and (set! default-q (list 1 1 2 3)) (for/list ([value Ts])
+      (set! default-q (apply (fct-1 value) default-q))) default-q)))
+
+; un take-right pe lista
+(define (get-right-element-list L)
+  (car (reverse L)))
+
+; bazat pe index, returneaza T1, T2 sau T3
+(define (get-matrix index)
+  (cond
+    ((= index 1) T1)
+    ((= index 2) T2)
+    (else T3)))
+
+(define (get-answer Ts ppt acc)
+  (if (null? Ts)
+      (multiply acc ppt)
+      (get-answer (cdr Ts) ppt (matrix* acc (get-matrix (car Ts))))))
+
+; Inmultirea a doua matrici
+(define (matrix* Matrix1 Matrix2)
+  (for/list ([row Matrix1])
+    (for/list ([column (apply map list Matrix2)])
+      (apply + (map * row column)))))
+
+(define (get-nth-ppt-from-matrix-transformations n)
+  (if (= n 1)
+      (list 3 4 5) ; default case
+      (get-nth-tuple (get-transformations n) (list 3 4 5) get-matrix)))
 
 ; TODO
 ; Definiți fluxul infinit de TPP folosind algoritmul descris
@@ -54,7 +123,12 @@
 ; Funcție utilă: stream-append
 ; Folosiți cel puțin o formă de let.
 (define ppt-stream-in-tree-order
-  'your-code-here)
+   (let bfs [(queue (list (list 3 4 5)))]
+   (stream-cons (car queue)
+                (bfs (cdr (append queue
+                                  (list (multiply T1 (car queue)))
+                                  (list (multiply T2 (car queue)))
+                                  (list (multiply T3 (car queue)))))))))
 
 
 ;; Un alt mod de a genera TPP se folosește de perechi (g, h)
@@ -130,8 +204,8 @@
 ;    există în rezultatul funcției pairs, dar nu vor mai exista
 ;    în fluxul gh-pairs-stream)
 (define (pairs G H)
-  'your-code-here)
-
+  (let [(index 1)]
+    
 
 ; TODO
 ; Definiți fluxul de perechi (g, h) pe care se bazează noua
